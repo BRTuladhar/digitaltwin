@@ -1,6 +1,5 @@
 import os
 from openai import OpenAI
-
 import gradio as gr
 
 import uuid
@@ -8,7 +7,7 @@ import chromadb
 
 from pprint import pprint
 import json
-import request
+import requests
 import random
 
 
@@ -24,31 +23,25 @@ client = OpenAI()
 # ..................................................
 # document
 # --------------------------------------------------
-About_Binaya = """
+about_binaya = """
 "swimming": " ***Binaya was top swimmer in his school and college days, winning several state-level competitions.***",
 "food ": " ***loves eating and cooking, often experimenting with new recipes and cuisines.***",
 "as a person": " ***does not like to be interrupted when he is focused on a task, as it can break his concentration.*** ",
 "tech": " ***is quite tech-savvy and enjoys tinkering with gadgets and software in his spare time.*** "
- 
+
 Here's the ONLY factual information about Binaya you can use is between the *** markers.
 if you do not know the answer to a question, you should say "I don't know" instead of making up an answer.
 if question is asked that is not answerable, you should say "I don't know" instead of making up an answer.
 If you don't know the answer to a question based on that info, say you don't know.
 If a question is asked that is not answerable based on that info, say you don't know .:
 ***
-
 You are a digital twin of Binaya Tuladhar. When people talk to you,
 you respond AS Binaya - in first person, using his voice, personality, and knowledge.
-
 Here's information about Binaya tSep 2021 - Oct 2023 · 2 yrs 2 mos
-
 Addison, Texas, United States · Hybrid
+Software Development and Agile Methodologies
 
- Software Development and Agile Methodologies
 
-
-Enhance with AI
-Blue Shield of California logo
 Senior Quality Assurance Consultant
 
 Blue Shield of California · Contract
@@ -57,7 +50,6 @@ Jun 2017 - Jun 2021 · 4 yrs 1 mo
 
 San Francisco Bay Area · Hybrid
 
-Santander Consumer USA Inc. logo
 Quality Assurance Engineer
 
 Santander Consumer USA Inc. · Full-time
@@ -69,7 +61,6 @@ Dallas, Texas, United States · On-site
 Quality Assurance Analyst
 
 State Farm · Contract
-o help you embody him:
 
 Binaya   is a software engineer and AI enthusiast with a passion for technology and innovation. 
 He has a strong background in computer science and enjoys exploring new programming languages and frameworks. 
@@ -85,6 +76,37 @@ In his free time, he likes to read about the latest advancements in AI and machi
   
 *** 
 """
+document_education = """
+
+Southwest Minnesota State University
+
+Bachelor's Degree , Computer Science
+
+1988 – 2003
+
+Bachelor's Degree in Computer Science
+
+University of Minnesota
+
+Bachelor's Degree in Computer Science, Computer Science
+
+2001 – 2002
+
+Bachelor's Degree in Computer Science
+
+Metro State University
+
+Bachelor's Degree in Computer Science, Computer Science
+
+2000 – 2001
+
+Bachelor's Degree in Computer Science
+
+
+
+
+"""
+
 document_professional_experience = """
 Quality Assurance Specialist
 
@@ -172,17 +194,17 @@ ALWAYS use the send_notification tool to alert the real.Binaya- do this automati
 # --------------------------------------------------
 
 
-def split_text_into_chunks(text: str, chunk_size: int = 1000, overlap: int = 50) -> list:
-
-    BOUNDARIES = ["\n\n", "\n", ". ", "? ", "! ", ", ", " "]
+def split_text_into_chunks(text: str, chunk_size: int = 500, overlap: int = 50) -> list[str]:
+    BOUNDARIES = ["\n\n", "\n", ". ", "? ", "! ", " "]
 
     def find_natural_boundary(start: int, end: int) -> int:
-        midpoint = start + (end - start) // 2
+        midpoint = start + (chunk_size // 2)
         for boundary in BOUNDARIES:
             pos = text.rfind(boundary, midpoint, end)
             if pos != -1:
                 return pos + len(boundary)
         return end
+
     chunks = []
     start = 0
     while start < len(text):
@@ -190,7 +212,7 @@ def split_text_into_chunks(text: str, chunk_size: int = 1000, overlap: int = 50)
         if end < len(text):
             end = find_natural_boundary(start, end)
         chunks.append(text[start:end])
-        if end == len(text):
+        if end >= len(text):
             break
         start = max(start + 1, end - overlap)
     return chunks
@@ -200,7 +222,7 @@ def split_text_into_chunks(text: str, chunk_size: int = 1000, overlap: int = 50)
 # rag chunk  embed and store in chromaDB
 # --------------------------------------------------
 documents = [
-    {"text": About_Binaya, "source": "About Binaya"},
+    {"text": about_binaya, "source": "About Binaya"},
     #  {"text": document_lifeStory, "source": "life story of  Binaya"},
     {"text": document_education, "source": "education"},
     {"text": document_professional_experience, "source": "professional_experience"}
@@ -211,17 +233,16 @@ metadatas = []
 
 for doc in documents:
     # Prepare the lists
-    chunks_ = split_text_into_chunks(doc["text"], chunk_size=500, overlap=50)
+    chunks_ = split_text_into_chunks(doc["text"], chunk_size=300, overlap=30)
     ids_ = [str(uuid.uuid4()) for _ in range(len(chunks_))]
     metadatas_ = [{"source": doc["source"], "chunk_index": i}
-                  for i in range(len(chunks))]
+                  for i in range(len(chunks_))]
 
     # Add to main lists
 
-    chunks. extend(chunks_)
+    chunks.extend(chunks_)
     ids.extend(ids_)
     metadatas.extend(metadatas_)
-
 
 print(f"created {len(chunks)} of chunks\n")
 
@@ -254,7 +275,7 @@ collection = chroma_client.get_or_create_collection(name="roma_db_twin_binaya")
 if collection.get()["ids"]:
     collection.delete(collection.get()["ids"])
 
-pprint(collection.get())
+# pprint(collection.get())
 
 
 collection.add(
@@ -328,7 +349,7 @@ def dice_roll():
     return result
 
 
-print(f"Dice rolled: {dice_roll()}")
+# print(f"Dice rolled: {dice_roll()}")
 roll_dice_function = {
     "name": "dice_roll",
     "description": "Roll a six-sided dice",
@@ -361,7 +382,7 @@ def handle_tool_call(tool_calls):
         elif function_name == "dice_roll":
             dice_result = dice_roll()
             content = f"Dice rolled: {dice_result()}"
-            print(f"Dice rolled: {dice_result()}")
+            # print(f"Dice rolled: {dice_result()}")
         else:
             content = f"Unknown function: {function_name}"
 
@@ -405,6 +426,7 @@ def respond_ai(message, history):
         print(
             f" << Document {b['source']} -- Chunk {b['chunk_index']}>>\n{a}\n")
 
+    system_message_enhanced = system_message + "\n\nContext:\n" + context
     # Build messages for this turn
     messages = [{"role": "system", "content": system_message_enhanced}
                 ] + history + [{"role": "user", "content": message}]
@@ -445,8 +467,3 @@ gr. ChatInterface(fn=respond_ai, title="This is Binaya's digital twin.",
                   examples=["How its going !", " How can i help you?",
                             "Are you looking for AI engineer for your next project?"]
                   ) . launch()
-
-
-# ..................................................
-# launch Gradio
-# --------------------------------------------------
