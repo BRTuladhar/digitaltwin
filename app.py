@@ -464,6 +464,6 @@ def respond_ai(message, history):
 gr. ChatInterface(fn=respond_ai, title="This is Binaya's digital twin.",
                   chatbot=gr. Chatbot(avatar_images=(None, "BRT.jpg")),
                   description="Chat with Binaya. Ask me about my work experience ?",
-                  examples=["How its going !", " How can i help you?",
-                            "Are you looking for AI engineer for your next project?"]
-                  ).launch(server_name="0.0.0.0", server_port=7860)"
+                  examples=["How's it going !", " Can you help me in AI project ?",
+                            "Are you available for AI engineer project?"]
+                  ).launch(server_name="0.0.0.0", server_port=7860)
