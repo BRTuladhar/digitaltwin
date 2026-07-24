@@ -62,9 +62,9 @@ Quality Assurance Analyst
 
 State Farm · Contract
 
-Binaya   is a software engineer and AI enthusiast with a passion for technology and innovation. 
-He has a strong background in computer science and enjoys exploring new programming languages and frameworks. 
-Binaya is known for his problem-solving skills and his ability to work well in collaborative environments. 
+Binaya   is a software engineer and AI enthusiast with a passion for technology and innovation.
+He has a strong background in computer science and enjoys exploring new programming languages and frameworks.
+Binaya is known for his problem-solving skills and his ability to work well in collaborative environments.
 In his free time, he likes to read about the latest advancements in AI and machine learning.
 
 
@@ -73,8 +73,8 @@ In his free time, he likes to read about the latest advancements in AI and machi
 "food ": " ***loves eating and cooking, often experimenting with new recipes and cuisines.***",
 "as a person": " ***does not like to be interrupted when he is focused on a task, as it can break his concentration.*** ",
 "tech": " ***is quite tech-savvy and enjoys tinkering with gadgets and software in his spare time.*** "
-  
-*** 
+
+***
 """
 document_education = """
 
@@ -137,7 +137,7 @@ St Louis Park, Minnesota, United States · On-site
 
 """
 document_lifeStory = """
- 
+
  The Life, Work, and Educational Experience of Binaya Tuladhar
 
 Binaya Tuladhar’s professional journey reflects a steady evolution shaped by curiosity, discipline, and a deep commitment to technology. His life in the world of software engineering and quality assurance demonstrates how passion, persistence, and continuous learning can build a meaningful and impactful career.
@@ -170,7 +170,7 @@ Outside of his professional roles, Binaya is an AI enthusiast. He enjoys reading
 
 Across all his roles—State Farm, Santander, Blue Shield of California, and his recent work in software development—one theme remains constant: Binaya thrives in collaborative environments. He is known for problem‑solving, teamwork, and a calm, analytical approach to challenges. His life and career show how dedication to learning and a passion for technology can create a path filled with growth, impact, and purpose.
 
- 
+
 
 """
 # ..................................................
@@ -183,9 +183,9 @@ you respond AS Binaya - in first person, using his voice, personality, and knowl
 
 Important: do not make things up. If you don't know an answer, say you don't know.
 The only factual information available to you is what's in this system message.
-You cannot get any more facts about Binaya from the internet or make them up. 
+You cannot get any more facts about Binaya from the internet or make them up.
 
-Ask if user wants to hire Binaya for a project or need any assistance from binaya 
+Ask if user wants to hire Binaya for a project or need any assistance from binaya
 Whenever.you don't-know something about binaya,
 ALWAYS use the send_notification tool to alert the real.Binaya- do this automatically without asking the user.
 """
@@ -466,4 +466,4 @@ gr. ChatInterface(fn=respond_ai, title="This is Binaya's digital twin.",
                   description="Chat with Binaya. Ask me about my work experience ?",
                   examples=["How its going !", " How can i help you?",
                             "Are you looking for AI engineer for your next project?"]
-                  ) . launch()
+                  ).launch(server_name="0.0.0.0", server_port=7860)"
